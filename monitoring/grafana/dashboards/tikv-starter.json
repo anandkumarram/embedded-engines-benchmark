@@ -1,0 +1,54 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "panels": [
+    {
+      "type": "graph",
+      "title": "TiKV gRPC QPS",
+      "targets": [
+        {
+          "expr": "sum(rate(tikv_grpc_msg_duration_seconds_count[1m]))",
+          "legendFormat": "grpc qps"
+        }
+      ],
+      "datasource": "Prometheus",
+      "gridPos": {"x": 0, "y": 0, "w": 24, "h": 8}
+    },
+    {
+      "type": "graph",
+      "title": "TiKV Storage Write Bytes/s",
+      "targets": [
+        {
+          "expr": "sum(rate(tikv_storage_async_write_bytes_sum[1m]))",
+          "legendFormat": "write bytes/s"
+        }
+      ],
+      "datasource": "Prometheus",
+      "gridPos": {"x": 0, "y": 8, "w": 24, "h": 8}
+    },
+    {
+      "type": "graph",
+      "title": "TiKV Engine Bytes Read/Write",
+      "targets": [
+        {"expr": "sum(rate(tikv_engine_bytes_written[1m]))", "legendFormat": "written"},
+        {"expr": "sum(rate(tikv_engine_bytes_read[1m]))", "legendFormat": "read"}
+      ],
+      "datasource": "Prometheus",
+      "gridPos": {"x": 0, "y": 16, "w": 24, "h": 8}
+    }
+  ],
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": ["tikv"],
+  "templating": {"list": []},
+  "time": {"from": "now-1h", "to": "now"},
+  "timezone": "browser",
+  "title": "TiKV Starter",
+  "version": 1
+}
+
+
+

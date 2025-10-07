@@ -1,0 +1,90 @@
+version: '3.8'
+services:
+  pd:
+    image: pingcap/pd:v7.5.0
+    container_name: tikv-pd
+    network_mode: host  
+    command:
+      - --name=pd
+      - --client-urls=http://0.0.0.0:2379
+      - --peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://127.0.0.1:2379
+      - --advertise-peer-urls=http://127.0.0.1:2380
+      - --initial-cluster=pd=http://127.0.0.1:2380
+      - --data-dir=/data/pd
+    ports:
+      - "2379:2379"
+    volumes:
+      - ./data/pd:/data/pd
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:2379/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  tikv:
+    image: pingcap/tikv:v7.5.0
+    container_name: tikv-node-1
+    network_mode: host  
+    depends_on:
+      - pd
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=127.0.0.1:20160
+      - --pd=127.0.0.1:2379
+      - --data-dir=/data/tikv
+      - --status-addr=0.0.0.0:20180
+    ports:
+      - "20160:20160"
+      - "20180:20180"
+    volumes:
+      - ./data/tikv1:/data/tikv
+    healthcheck:
+      test: ["CMD", "sh", "-c", "test -f /data/tikv/LOCK || exit 1; exit 0"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: tikv-prometheus
+    network_mode: host  
+    depends_on:
+      - pd
+      - tikv
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  grafana:
+    image: grafana/grafana:10.4.5
+    container_name: tikv-grafana
+    network_mode: host  
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./monitoring/grafana:/var/lib/grafana
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/provisioning/datasources/datasource-pg.yaml:/etc/grafana/provisioning/datasources/datasource-pg.yaml
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: pg-bench
+    network_mode: host
+    environment:
+      - POSTGRES_USER=bench
+      - POSTGRES_PASSWORD=bench
+      - POSTGRES_DB=bench
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+

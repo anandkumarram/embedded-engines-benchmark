@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'pd'
+    static_configs:
+      - targets: ['localhost:2379']
+    metrics_path: /metrics
+
+  - job_name: 'tikv'
+    static_configs:
+      - targets: ['localhost:20180']
+    metrics_path: /metrics
+
+
