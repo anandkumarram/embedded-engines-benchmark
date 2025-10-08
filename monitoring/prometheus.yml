@@ -5,12 +5,12 @@ global:
 scrape_configs:
   - job_name: 'pd'
     static_configs:
-      - targets: ['localhost:2379']
+      - targets: ['127.0.0.1:12379']
     metrics_path: /metrics
 
   - job_name: 'tikv'
     static_configs:
-      - targets: ['localhost:20180']
+      - targets: ['127.0.0.1:30180']
     metrics_path: /metrics
 
 

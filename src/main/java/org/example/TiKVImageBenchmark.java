@@ -29,10 +29,10 @@ public class TiKVImageBenchmark {
     }
 
     public static void main(String[] args) throws Exception {
-        int numImages = getIntArg(args, 0, 100000);
+        int numImages = getIntArg(args, 0, 10000);
         int pixelsPerSide = getIntArg(args, 1, 128);
         String imagesDirPath = getStringArg(args, 2, "images");
-        String pdAddress = getStringArg(args, 3, "127.0.0.1:2379");
+        String pdAddress = getStringArg(args, 3, "127.0.0.1:12379");
         int threads = getIntArg(args, 4, Math.max(2, Runtime.getRuntime().availableProcessors() * 2));
         int batchSize = getIntArg(args, 5, 10000);
 

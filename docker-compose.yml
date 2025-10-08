@@ -6,18 +6,18 @@ services:
     network_mode: host  
     command:
       - --name=pd
-      - --client-urls=http://0.0.0.0:2379
-      - --peer-urls=http://0.0.0.0:2380
-      - --advertise-client-urls=http://127.0.0.1:2379
-      - --advertise-peer-urls=http://127.0.0.1:2380
-      - --initial-cluster=pd=http://127.0.0.1:2380
+      - --client-urls=http://0.0.0.0:12379
+      - --peer-urls=http://0.0.0.0:12380
+      - --advertise-client-urls=http://127.0.0.1:12379
+      - --advertise-peer-urls=http://127.0.0.1:12380
+      - --initial-cluster=pd=http://127.0.0.1:12380
       - --data-dir=/data/pd
     ports:
-      - "2379:2379"
+      - "12379:12379"
     volumes:
       - ./data/pd:/data/pd
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:2379/health"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:12379/health"]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -29,14 +29,14 @@ services:
     depends_on:
       - pd
     command:
-      - --addr=0.0.0.0:20160
-      - --advertise-addr=127.0.0.1:20160
-      - --pd=127.0.0.1:2379
+      - --addr=0.0.0.0:30160
+      - --advertise-addr=127.0.0.1:30160
+      - --pd=127.0.0.1:12379
       - --data-dir=/data/tikv
-      - --status-addr=0.0.0.0:20180
+      - --status-addr=0.0.0.0:30180
     ports:
-      - "20160:20160"
-      - "20180:20180"
+      - "30160:30160"
+      - "30180:30180"
     volumes:
       - ./data/tikv1:/data/tikv
     healthcheck:
@@ -53,7 +53,7 @@ services:
       - pd
       - tikv
     ports:
-      - "9090:9090"
+      - "19090:9090"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
 
@@ -64,7 +64,7 @@ services:
     depends_on:
       - prometheus
     ports:
-      - "3000:3000"
+      - "13000:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
@@ -83,7 +83,7 @@ services:
       - POSTGRES_PASSWORD=bench
       - POSTGRES_DB=bench
     ports:
-      - "5432:5432"
+      - "15432:5432"
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
 

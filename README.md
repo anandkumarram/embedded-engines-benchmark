@@ -14,9 +14,14 @@ docker compose up -d
 # or: docker-compose up -d
 ```
 
-This brings up PD and 3 TiKV nodes on a single network.
+This brings up PD and TiKV with alternate ports to avoid conflicts.
 
-PD endpoint: `127.0.0.1:2379`
+Service endpoints:
+- PD: `127.0.0.1:12379`
+- TiKV: `127.0.0.1:30160` (status: 30180)
+- Prometheus: `http://localhost:19090`
+- Grafana: `http://localhost:13000` (admin/admin)
+- Postgres: `127.0.0.1:15432`
 
 ### Build
 
@@ -28,10 +33,10 @@ mvn -q -DskipTests package
 
 Args: `<numImages> <pixelsPerSide> <imagesDir> <pdAddress> <threads>`
 
-Defaults: `100 256 images 127.0.0.1:2379 <cpu>`
+Defaults: `100 256 images 127.0.0.1:12379 <cpu>`
 
 ```bash
-java -jar target/tikv-benchmark-1.0.0-SNAPSHOT-shaded.jar 500 256 images 127.0.0.1:2379 8
+java -jar target/tikv-benchmark-1.0.0-SNAPSHOT-shaded.jar 500 256 images 127.0.0.1:12379 8
 ```
 
 The tool will generate images into the directory if not present.
@@ -45,14 +50,14 @@ The tool will generate images into the directory if not present.
 - Uses `org.tikv:tikv-client-java` RawKV.
 
 ### Monitoring (Prometheus + Grafana)
-- Prometheus: `http://localhost:9090`
-- Grafana: `http://localhost:3000` (admin/admin)
+- Prometheus: `http://localhost:19090`
+- Grafana: `http://localhost:13000` (admin/admin)
 
 Prometheus scrapes:
-- PD metrics at `pd:2379/metrics`
-- TiKV metrics at `tikv:20180/metrics`
+- PD metrics at `127.0.0.1:12379/metrics`
+- TiKV metrics at `127.0.0.1:30180/metrics`
 
-If Grafana has no dashboards, you can import TiKV/TiDB community dashboards from Grafana.com by ID, and point the Prometheus datasource at `http://prometheus:9090` inside the compose network.
+If Grafana has no dashboards, you can import TiKV/TiDB community dashboards from Grafana.com by ID.
 
 ## PostgreSQL Benchmark
 
@@ -72,12 +77,12 @@ Run Postgres benchmark:
 
 Args: `<numImages> <pixelsPerSide> <imagesDir> <jdbcUrl> <user> <pass> <threads> <batchSize>`
 
-Defaults: `200000 128 images jdbc:postgresql://127.0.0.1:5432/bench bench bench <cpu*2> 10000`
+Defaults: `200000 128 images jdbc:postgresql://127.0.0.1:15432/bench bench bench <cpu*2> 10000`
 
 ```bash
 mvn -q org.codehaus.mojo:exec-maven-plugin:3.3.0:java \
   -Dexec.mainClass=org.example.PostgresImageBenchmark \
-  -Dexec.args="200000 128 images jdbc:postgresql://127.0.0.1:5432/bench bench bench 16 10000"
+  -Dexec.args="200000 128 images jdbc:postgresql://127.0.0.1:15432/bench bench bench 16 10000"
 ```
 
 ## LMDB Benchmark

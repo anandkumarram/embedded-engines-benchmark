@@ -34,7 +34,7 @@ public class PostgresImageBenchmark {
         int numImages = getIntArg(args, 0, 100000);
         int pixelsPerSide = getIntArg(args, 1, 128);
         String imagesDirPath = getStringArg(args, 2, "images");
-        String jdbcUrl = getStringArg(args, 3, "jdbc:postgresql://127.0.0.1:5432/bench");
+        String jdbcUrl = getStringArg(args, 3, "jdbc:postgresql://127.0.0.1:15432/bench");
         String user = getStringArg(args, 4, "bench");
         String pass = getStringArg(args, 5, "bench");
         int threads = getIntArg(args, 6, Math.max(2, Runtime.getRuntime().availableProcessors() * 2));
